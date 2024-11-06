@@ -7,6 +7,10 @@ import CustomizedCaptions from './CustomizedCaptions';
 import './AdventureLogicc.css';
 import AudioSettings from './AudioSettings';
 import SettingsButton from './SettingsButton';
+import creatureHurtSound from '../assets/sounds/creature_hurt.wav';
+import shootSound from '../assets/sounds/shoot.wav';
+import videoGame from '../assets/videos/VideoGame.mp4';
+import videoIntro from '../assets/videos/VideoIntro.mp4';
 // Game constants
 const GAME_CONSTANTS = {
   SAFE_ZONE_RADIUS: 50,
@@ -203,41 +207,41 @@ const AdventureLogic = () => {
     };
   }, []);
 
-  // Handler functions
-  const handlePlayerShoot = useCallback(() => {
-    setEntities(prev => {
-      const nearbyCreatures = prev.creatures.filter(creature => 
-        isColliding(creature.position, prev.playerPosition, GAME_CONSTANTS.SAFE_ZONE_RADIUS)
-      );
+ // Handler functions
+const handlePlayerShoot = useCallback(() => {
+  setEntities(prev => {
+    const nearbyCreatures = prev.creatures.filter(creature => 
+      isColliding(creature.position, prev.playerPosition, GAME_CONSTANTS.SAFE_ZONE_RADIUS)
+    );
 
-      if (nearbyCreatures.length > 0) {
-        const closestCreature = nearbyCreatures.reduce((closest, creature) => {
-          const distance = getDistance(creature.position, prev.playerPosition);
-          const closestDistance = getDistance(closest.position, prev.playerPosition);
-          return distance < closestDistance ? creature : closest;
-        });
+    if (nearbyCreatures.length > 0) {
+      const closestCreature = nearbyCreatures.reduce((closest, creature) => {
+        const distance = getDistance(creature.position, prev.playerPosition);
+        const closestDistance = getDistance(closest.position, prev.playerPosition);
+        return distance < closestDistance ? creature : closest;
+      });
 
-        if (getDistance(closestCreature.position, prev.playerPosition) <= GAME_CONSTANTS.MAX_ELIMINATION_DISTANCE) {
-          playSound('/sounds/creature_hurt.wav');
-          setGameState(prev => ({ ...prev, score: prev.score + 1 }));
+      if (getDistance(closestCreature.position, prev.playerPosition) <= GAME_CONSTANTS.MAX_ELIMINATION_DISTANCE) {
+        playSound(creatureHurtSound);  // Updated to use imported sound
+        setGameState(prev => ({ ...prev, score: prev.score + 1 }));
 
-          return {
-            ...prev,
-            creatures: prev.creatures.filter(c => c.id !== closestCreature.id)
-          };
-        }
+        return {
+          ...prev,
+          creatures: prev.creatures.filter(c => c.id !== closestCreature.id)
+        };
       }
+    }
 
-      playSound('/sounds/shoot.wav');
-      return {
-        ...prev,
-        playerBullets: [...prev.playerBullets, {
-          id: Math.random(),
-          position: { ...prev.playerPosition }
-        }]
-      };
-    });
-  }, [isColliding, getDistance, playSound]);
+    playSound(shootSound);  // Updated to use imported sound
+    return {
+      ...prev,
+      playerBullets: [...prev.playerBullets, {
+        id: Math.random(),
+        position: { ...prev.playerPosition }
+      }]
+    };
+  });
+}, [isColliding, getDistance, playSound]);
 
   const handleKeyPress = useCallback((event) => {
     if (gameState.over) return;
@@ -290,25 +294,25 @@ const AdventureLogic = () => {
       narrationComplete: true,
       creaturesInSafeZone: 0
     });
-
+  
     setEntities({
       creatures: [],
       playerBullets: [],
       heroPosition: { left: '50%', top: '50%' },
       playerPosition: { left: '30%', top: '80%' }
     });
-
+  
     setUiState(prev => ({
       ...prev,
       lastHeroWarningTime: 0,
       lastCreatureWarningTime: 0
     }));
-
+  
     refs.dialogueQueue.current = [];
     refs.isProcessingQueue.current = false;
-
+  
     if (refs.video.current) {
-      refs.video.current.src = '/sounds/VideoGame.mp4';
+      refs.video.current.src = videoGame;  // Updated to use imported video
       refs.video.current.load();
       refs.video.current.play().catch(err => console.error('Video playback failed:', err));
     }
@@ -396,7 +400,7 @@ const AdventureLogic = () => {
   // Effects
   useEffect(() => {
     if (refs.video.current) {
-      refs.video.current.src = gameState.started ? '/sounds/VideoGame.mp4' : '/sounds/VideoIntro.mp4';
+      refs.video.current.src = gameState.started ? videoGame : videoIntro;  // Updated to use imported videos
       refs.video.current.load();
       refs.video.current.play().catch(err => console.error('Video playback failed:', err));
     }
