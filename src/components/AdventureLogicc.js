@@ -477,36 +477,61 @@ const handlePlayerShoot = useCallback(() => {
 
   // Render
   return (
-    <div className="game-container">
-      <video ref={refs.video} className="background-video" loop muted />
+    <div 
+      className="game-container" 
+      role="application" 
+      aria-label="The Hero's Guardian Game"
+    >
+      <video 
+        ref={refs.video} 
+        className="background-video" 
+        loop 
+        muted 
+        aria-hidden="true"
+      />
       
       {!gameState.started ? (
-        <div className="intro-screen">
+        <div 
+          className="intro-screen"
+          role="dialog"
+          aria-label="Game Introduction"
+        >
           <div className="intro-content">
             <h1 className="game-title">The Hero's Guardian</h1>
             {gameState.narrationComplete && (
               <button
                 onClick={() => setGameState(prev => ({ ...prev, started: true }))}
                 className="start-button"
+                aria-label="Start Game"
               >
                 Start Game
               </button>
             )}
             <CustomizedCaptions 
-            caption={uiState.captionText} 
-            speakerType="narrator" 
+              caption={uiState.captionText} 
+              speakerType="narrator" 
+              aria-live="polite"
             />
           </div>
         </div>
       ) : (
-        <div className="game-area">
-           <SettingsButton />
-           <AudioSettings
+        <div 
+          className="game-area"
+          role="main"
+          aria-label="Game Play Area"
+        >
+          <SettingsButton aria-label="Open Settings Menu" />
+          <AudioSettings
             audioPreferences={audioPreferences}
             setAudioPreferences={setAudioPreferences}
+            aria-label="Audio Settings Panel"
           />
-           {gameState.over ? (
-            <div className="game-over">
+          {gameState.over ? (
+            <div 
+              className="game-over"
+              role="dialog"
+              aria-label="Game Over Screen"
+            >
               <div className="game-over-content">
                 <h1>Game Over</h1>
                 <p>Final Score: {gameState.score}</p>
@@ -514,6 +539,7 @@ const handlePlayerShoot = useCallback(() => {
                 <button 
                   className="restart-button"
                   onClick={resetGame}
+                  aria-label="Restart Game"
                 >
                   Play Again
                 </button>
@@ -521,13 +547,24 @@ const handlePlayerShoot = useCallback(() => {
             </div>
           ) : (
             <>
-              <div style={safeZoneStyle} /> {/* Safe zone circle */}
-              <Hero heroPosition={entities.heroPosition} />
-              <Player playerPosition={entities.playerPosition} />
+              <div 
+                style={safeZoneStyle} 
+                role="region" 
+                aria-label="Safe Zone Area"
+              />
+              <Hero 
+                heroPosition={entities.heroPosition} 
+                aria-label="Hero Character"
+              />
+              <Player 
+                playerPosition={entities.playerPosition} 
+                aria-label="Player Character"
+              />
               {entities.creatures.map(creature => (
                 <Creature 
                   key={creature.id} 
                   creaturePosition={creature.position} 
+                  aria-label={`Creature at position ${Math.round(parseFloat(creature.position.left))}% left, ${Math.round(parseFloat(creature.position.top))}% top`}
                 />
               ))}
               {entities.playerBullets.map(bullet => (
@@ -535,19 +572,27 @@ const handlePlayerShoot = useCallback(() => {
                   key={bullet.id}
                   className="bullet"
                   style={bullet.position}
+                  role="presentation"
+                  aria-hidden="true"
                 />
               ))}
-              <div className="score-board">
-                <p>Score: {gameState.score}</p>
-                <p>Hero Health: {gameState.heroHits}</p>
-                <p>Creatures in Zone: {gameState.creaturesInSafeZone}</p>
+              <div 
+                className="score-board"
+                role="status"
+                aria-label="Game Statistics"
+              >
+                <p aria-label={`Score: ${gameState.score}`}>Score: {gameState.score}</p>
+                <p aria-label={`Hero Health: ${gameState.heroHits}`}>Hero Health: {gameState.heroHits}</p>
+                <p aria-label={`Creatures in Zone: ${gameState.creaturesInSafeZone}`}>
+                  Creatures in Zone: {gameState.creaturesInSafeZone}
+                </p>
               </div>
               <CustomizedCaptions 
-              caption={uiState.captionText} 
-              speakerType={getCurrentSpeaker()}
-              captionHistory={uiState.captionHistory} // You'll need to add this function
-              
-            />
+                caption={uiState.captionText} 
+                speakerType={getCurrentSpeaker()}
+                captionHistory={uiState.captionHistory}
+                aria-live="polite"
+              />
             </>
           )}
         </div>
@@ -555,4 +600,5 @@ const handlePlayerShoot = useCallback(() => {
     </div>
   );
 };
+
 export default AdventureLogic;

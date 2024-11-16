@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect } from 'react'; 
 import { UserContext } from '../context/UserContext';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
@@ -31,23 +31,29 @@ const Signup = () => {
       <SignupCard>
         <h2>Sign Up</h2>
         <form onSubmit={handleSubmit}>
+          <Label htmlFor="username">Username</Label>
           <InputField
+            id="username"
             type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             placeholder="Enter username"
+            aria-label="Enter your username"
             required
           />
+          <Label htmlFor="password">Password</Label>
           <InputField
+            id="password"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Enter password"
+            aria-label="Enter your password"
             required
           />
           <SubmitButton type="submit">Sign Up</SubmitButton>
         </form>
-        {message && <Message>{message}</Message>}
+        {message && <Message role="alert">{message}</Message>}
       </SignupCard>
     </SignupContainer>
   );
@@ -71,6 +77,13 @@ const SignupCard = styled.div`
   width: 400px;
 `;
 
+const Label = styled.label`
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  display: block;
+`;
+
 const InputField = styled.input`
   width: 100%;
   padding: 0.8rem;
@@ -83,7 +96,7 @@ const InputField = styled.input`
 const SubmitButton = styled.button`
   width: 100%;
   padding: 0.8rem;
-  background-color: #007bff;
+  background-color: #004085;
   color: white;
   border: none;
   border-radius: 4px;
@@ -91,7 +104,12 @@ const SubmitButton = styled.button`
   cursor: pointer;
 
   &:hover {
-    background-color: #0056b3;
+    background-color: #002a5e;
+  }
+
+  &:focus {
+    outline: 2px solid #ffcc00;
+    outline-offset: 4px;
   }
 `;
 
